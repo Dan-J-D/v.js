@@ -21,7 +21,7 @@ const v = Object.freeze((() => {
 
 			/**
 			 * @param {number} x 
-			 * @returns {this}
+			 * @returns {numberValidator}
 			 */
 			default(x) {
 				if (this._optional === true)
@@ -45,7 +45,7 @@ const v = Object.freeze((() => {
 
 			/**
 			 * @param {number} x 
-			 * @returns {this}
+			 * @returns {numberValidator}
 			 */
 			min(x) {
 				if (typeof x !== 'number' || isNaN(x))
@@ -66,7 +66,7 @@ const v = Object.freeze((() => {
 
 			/**
 			 * @param {number} x 
-			 * @returns {this}
+			 * @returns {numberValidator}
 			 */
 			max(x) {
 				if (typeof x !== 'number' || isNaN(x))
@@ -86,7 +86,7 @@ const v = Object.freeze((() => {
 			}
 
 			/**
-			 * @returns {this}
+			 * @returns {numberValidator}
 			 */
 			isWhole() {
 				if (this._default !== undefined && !Number.isInteger(this._default))
@@ -103,7 +103,7 @@ const v = Object.freeze((() => {
 			}
 
 			/**
-			 * @returns {this}
+			 * @returns {numberValidator}
 			 */
 			optional() {
 				if (this._default !== undefined)
@@ -332,7 +332,7 @@ const v = Object.freeze((() => {
 
 			/**
 			 * @param {boolean} x 
-			 * @returns {this}
+			 * @returns {booleanValidator}
 			 */
 			default(x) {
 				if (this._optional === true)
@@ -346,7 +346,7 @@ const v = Object.freeze((() => {
 			}
 
 			/**
-			 * @returns {this}
+			 * @returns {booleanValidator}
 			 */
 			optional() {
 				if (this._default !== undefined)
