@@ -549,7 +549,14 @@ const v = Object.freeze((() => {
 			/**
 			 * @returns {Error[]}
 			 */
-			errors() { return this.err; }
+			errors() {
+				let ret = this.err;
+				if (typeof type.errors !== 'function' || typeof type.validate !== 'function')
+					ret.push(new Error('array.errors() type is invalid'));
+				else ret = ret.concat(type.errors());
+
+				return ret;
+			}
 		}
 	}
 
@@ -614,7 +621,16 @@ const v = Object.freeze((() => {
 			/**
 			 * @returns {Error[]}
 			 */
-			errors() { return this.err; }
+			errors() {
+				let ret = this.err;
+				for (const key in types) {
+					if (typeof types[key].validate !== 'function' || typeof types[key].errors !== 'function')
+						ret.push(new Error(`object.errors() key ${key} is invalid`));
+					else ret = ret.concat(types[key].errors());
+				}
+
+				return ret;
+			}
 		}
 	}
 
@@ -626,6 +642,7 @@ const v = Object.freeze((() => {
 		/**
 		 * @typedef {object} equalValidator
 		 * @property {(d: any) => [Error[], any | undefined]} validate
+		 * @property {() => Error[]} errors
 		 */
 		return new class {
 			validate(d) {
@@ -633,6 +650,8 @@ const v = Object.freeze((() => {
 					return [[new Error('equal.validate() values are not equal')], undefined];
 				return [[], d];
 			}
+
+			errors() { return []; }
 		}
 	}
 
