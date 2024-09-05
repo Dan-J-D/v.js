@@ -384,9 +384,6 @@ const v = Object.freeze((() => {
 	 * @returns {arrayValidator}
 	 */
 	const array = (type) => {
-		if (type === undefined || type === null)
-			throw new Error('array() must be given a type');
-
 		/**
 		 * @typedef {object} arrayValidator
 		 * @property {(x: TT) => arrayValidator} default
@@ -402,6 +399,9 @@ const v = Object.freeze((() => {
 			constructor() {
 				/** @type {Error[]} */
 				this.err = [];
+
+				if (typeof type !== 'object' || type === null || typeof type.validate !== 'function')
+					this.err.push(new Error('array() type is invalid'));
 			}
 
 			/**
@@ -636,23 +636,55 @@ const v = Object.freeze((() => {
 	 * @returns {orValidator}
 	 */
 	const or = (...types) => {
-		if (types.length === 0)
-			throw new Error('or() must be given at least one type');
-
 		/**
 		 * @typedef {object} orValidator
+		 * @property {(x: any) => orValidator} default
 		 * @property {() => orValidator} optional
 		 * @property {(d: any) => [Error[], any | undefined]} validate
+		 * @property {() => Error[]} errors
 		 */
 		return new class {
+			constructor() {
+				/** @type {Error[]} */
+				this.err = [];
+
+				if (types.length === 0)
+					this.err.push(new Error('or() must be given at least one type'));
+
+				for (let i = 0; i < types.length; i++) {
+					if (typeof types[i].validate !== 'function')
+						this.err.push(new Error('or() all types must have a validate function'));
+				}
+			}
+
+			/**
+			 * @param {any} x 
+			 * @returns {orValidator}
+			 */
+			default(x) {
+				if (this._optional === true) {
+					this.err.push(new Error('or.default() cannot have a default value'));
+					return this;
+				}
+
+				for (let i = 0; i < types.length; i++) {
+					const [err, val] = types[i].validate(x);
+					if (err.length === 0) {
+						this._default = val;
+						return this;
+					}
+				}
+
+				return this;
+			}
+
 			/**
 			 * @returns {orValidator}
 			 */
 			optional() {
-				for (let i = 0; i < types.length; i++) {
-					if (typeof types[i].optional !== 'function')
-						throw new Error('or.optional() all types must be optional');
-					types[i].optional();
+				if (this._default !== undefined) {
+					this.err.push(new Error('or.optional() cannot have a default value'));
+					return this;
 				}
 
 				return this;
@@ -671,6 +703,11 @@ const v = Object.freeze((() => {
 
 				return [[new Error('or.validate() no types matched')], undefined];
 			}
+
+			/**
+			 * @returns {Error[]}
+			 */
+			errors() { return this.err; }
 		}
 	}
 
