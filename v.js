@@ -561,6 +561,7 @@ const v = Object.freeze((() => {
 
 		/**
 		 * @typedef {object} objectValidator
+		 * @property {() => objectValidator} optional
 		 * @property {(d: object) => [Error[], object | undefined]} validate
 		 * @property {() => Error[]} errors
 		 */
@@ -573,6 +574,14 @@ const v = Object.freeze((() => {
 					if (typeof types[key].validate !== 'function')
 						this.err.push(new Error(`object() key ${key} is invalid`));
 				}
+			}
+
+			/**
+			 * @returns {objectValidator}
+			 */
+			optional() {
+				this._optional = true;
+				return this;
 			}
 
 			/**
@@ -634,9 +643,23 @@ const v = Object.freeze((() => {
 
 		/**
 		 * @typedef {object} orValidator
+		 * @property {() => orValidator} optional
 		 * @property {(d: any) => [Error[], any | undefined]} validate
 		 */
 		return new class {
+			/**
+			 * @returns {orValidator}
+			 */
+			optional() {
+				for (let i = 0; i < types.length; i++) {
+					if (typeof types[i].optional !== 'function')
+						throw new Error('or.optional() all types must be optional');
+					types[i].optional();
+				}
+
+				return this;
+			}
+
 			/**
 			 * @param {any} d 
 			 * @returns {[Error[], any | undefined]}
