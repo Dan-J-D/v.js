@@ -556,9 +556,6 @@ const v = Object.freeze((() => {
 		 * @returns {objectValidator}
 		 */
 	const object = (types) => {
-		if (typeof types !== 'object' || types === null)
-			throw new Error('object() must be given an object');
-
 		/**
 		 * @typedef {object} objectValidator
 		 * @property {() => objectValidator} optional
@@ -590,6 +587,7 @@ const v = Object.freeze((() => {
 			 */
 			validate(d) {
 				if (this.err.length > 0) return [this.err, undefined];
+				if (types === undefined || types === null) return [[new Error('object.validate() invalid object')], undefined];
 				if (this._optional && (d === undefined || d === null)) return [[], d];
 				if (this._default !== undefined && (d === undefined || d === null)) return [[], this._default];
 
