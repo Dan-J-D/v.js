@@ -567,6 +567,8 @@ const v = Object.freeze((() => {
 				/** @type {Error[]} */
 				this.err = [];
 
+				if (types === undefined || types === null) return [[new Error('object.validate() invalid object')], undefined];
+
 				for (const key in types) {
 					if (typeof types[key].validate !== 'function')
 						this.err.push(new Error(`object() key ${key} is invalid`));
@@ -587,7 +589,6 @@ const v = Object.freeze((() => {
 			 */
 			validate(d) {
 				if (this.err.length > 0) return [this.err, undefined];
-				if (types === undefined || types === null) return [[new Error('object.validate() invalid object')], undefined];
 				if (this._optional && (d === undefined || d === null)) return [[], d];
 				if (this._default !== undefined && (d === undefined || d === null)) return [[], this._default];
 
@@ -695,6 +696,10 @@ const v = Object.freeze((() => {
 			 * @returns {[Error[], any | undefined]}
 			 */
 			validate(d) {
+				if (this.err.length > 0) return [this.err, undefined];
+				if (this._optional && (d === undefined || d === null)) return [[], d];
+				if (this._default !== undefined && (d === undefined || d === null)) return [[], this._default];
+
 				for (let i = 0; i < types.length; i++) {
 					const [err, val] = types[i].validate(d);
 					if (err.length === 0)
