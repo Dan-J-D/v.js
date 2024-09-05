@@ -538,6 +538,8 @@ const v = Object.freeze((() => {
 						const [err, val] = type.validate(d[i]);
 						if (err.length > 0)
 							return [[new Error(`array.validate() element ${i} is invalid`), undefined]];
+
+						d[i] = val;
 					}
 				} else return [[new Error('array.validate() type is invalid'), undefined]];
 
@@ -602,6 +604,8 @@ const v = Object.freeze((() => {
 					const [err, val] = types[key].validate(d[key]);
 					if (err.length > 0)
 						return [[new Error(`object.validate() key ${key} is invalid`), undefined]];
+
+					d[key] = val;
 				}
 
 				return [[], d];
