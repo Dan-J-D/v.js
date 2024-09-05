@@ -10,7 +10,7 @@ const v = Object.freeze((() => {
 		 * @property {(x: number) => numberValidator} max
 		 * @property {() => numberValidator} isWhole
 		 * @property {() => numberValidator} optional
-		 * @property {(d: number) => [Error[], number]} validate
+		 * @property {(d: number) => [Error[], number | undefined]} validate
 		 * @property {() => Error[]} errors
 		 */
 		return new class {
@@ -115,7 +115,7 @@ const v = Object.freeze((() => {
 
 			/**
 			 * @param {any} d
-			 * @returns {[Error[], number]}
+			 * @returns {[Error[], number | undefined]}
 			 */
 			validate(d) {
 				if (this.err.length > 0) return [this.err, undefined];
@@ -156,7 +156,7 @@ const v = Object.freeze((() => {
 		 * @property {(x: number) => stringValidator} length
 		 * @property {(x: string) => stringValidator} inCharset
 		 * @property {() => stringValidator} optional
-		 * @property {(d: string) => [Error[], string]} validate
+		 * @property {(d: string) => [Error[], string | undefined]} validate
 		 * @property {() => Error[]} errors
 		 */
 		return new class {
@@ -277,7 +277,7 @@ const v = Object.freeze((() => {
 
 			/**
 			 * @param {any} d 
-			 * @returns {[Error[], string]}
+			 * @returns {[Error[], string | undefined]}
 			 */
 			validate(d) {
 				if (this.err.length > 0) return [this.err, undefined];
@@ -321,7 +321,7 @@ const v = Object.freeze((() => {
 		 * @typedef {object} booleanValidator
 		 * @property {(x: boolean) => booleanValidator} default
 		 * @property {() => booleanValidator} optional
-		 * @property {(d: boolean) => Error[]} validate
+		 * @property {(d: boolean) => [Error[], boolean | undefined]} validate
 		 * @property {() => Error[]} errors
 		 */
 		return new class {
@@ -394,7 +394,7 @@ const v = Object.freeze((() => {
 		 * @property {(x: number) => arrayValidator} maxlength
 		 * @property {(x: number) => arrayValidator} length
 		 * @property {() => arrayValidator} optional
-		 * @property {(d: TT) => [Error[], TT]} validate
+		 * @property {(d: TT) => [Error[], TT | undefined]} validate
 		 * @property {() => Error[]} errors
 		 * @template TT
 		*/
@@ -514,7 +514,7 @@ const v = Object.freeze((() => {
 
 			/**
 			 * @param {TT} d 
-			 * @returns {[Error[], TT]}
+			 * @returns {[Error[], TT | undefined]}
 			 */
 			validate(d) {
 				if (this.err.length > 0) return [this.err, undefined];
@@ -561,7 +561,7 @@ const v = Object.freeze((() => {
 
 		/**
 		 * @typedef {object} objectValidator
-		 * @property {(d: object) => [Error[], object]} validate
+		 * @property {(d: object) => [Error[], object | undefined]} validate
 		 * @property {() => Error[]} errors
 		 */
 		return new class {
@@ -613,7 +613,7 @@ const v = Object.freeze((() => {
 	const equal = (x) => {
 		/**
 		 * @typedef {object} equalValidator
-		 * @property {(d: any) => [Error[], any]} validate
+		 * @property {(d: any) => [Error[], any | undefined]} validate
 		 */
 		return new class {
 			validate(d) {
@@ -634,12 +634,12 @@ const v = Object.freeze((() => {
 
 		/**
 		 * @typedef {object} orValidator
-		 * @property {(d: any) => [Error[], any]} validate
+		 * @property {(d: any) => [Error[], any | undefined]} validate
 		 */
 		return new class {
 			/**
 			 * @param {any} d 
-			 * @returns {[Error[], any]}
+			 * @returns {[Error[], any | undefined]}
 			 */
 			validate(d) {
 				for (let i = 0; i < types.length; i++) {
