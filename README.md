@@ -1,4 +1,4 @@
-# Tiny vanilla js type validator
+# V.js
 A simple, small & secure js type validator. Easily readable & extendable code. Single file include. Returns errors or values.
 
 ## Examples 
