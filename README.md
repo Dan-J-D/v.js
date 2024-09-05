@@ -42,3 +42,22 @@ if (errs.length > 0) {
 
 // val.* is valid
 ```
+
+## How to add a custom type
+You just need to implement a `validate()` & `errors()` functions.
+```js
+const customType = () => {
+    return new class {
+        /**
+          * @param {any} d
+          * @returns {[Error[], any | undefined]}
+          */
+        validate(d) {}
+        
+        /**
+          * @returns {Error[]}
+          */
+        errors() {}
+    }
+}
+```
