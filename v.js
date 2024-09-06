@@ -379,6 +379,92 @@ const v = Object.freeze((() => {
 	}
 
 	/**
+	 * @returns {datetimeValidator}
+	 */
+	const datetime = () => {
+		/**
+		 * @typedef {object} datetimeValidator
+		 * @property {(x: Date | number | null | undefined) => datetimeValidator} default
+		 * @property {() => datetimeValidator} optional
+		 * @property {(d: any) => [Error[], Date | undefined]} validate
+		 * @property {() => Error[]} errors
+		 */
+		return new class {
+			constructor() {
+				/** @type {Error[]} */
+				this.err = [];
+			}
+
+			/**
+			 * @param {Date | string | number | null | undefined} x (Date) Sets default to that datetime, (number) Sets default to current timestamp + number in ms, (null | undefined) Sets default to current datetime
+			 * @returns {datetimeValidator}
+			 */
+			default(x) {
+				if (this._optional === true)
+					this.err.push(new Error('datetime.default() cannot have a default value'));
+
+				if (typeof x === 'number' && isNaN(x))
+					this.err.push(new Error('datetime.default() must be a number'));
+
+				if (x instanceof Date)
+					this._default = x;
+				else if (typeof x === 'string')
+					this._default = new Date(x);
+				else if (typeof x === 'number')
+					this._default = x;
+				else if (x === null || x === undefined)
+					this._default = 0;
+				else this.err.push(new Error('datetime.default() must be a Date object, number, or null'));
+
+				return this;
+			}
+
+			/**
+			 * @returns {datetimeValidator}
+			 */
+			optional() {
+				if (this._default !== undefined)
+					this.err.push(new Error('datetime.optional() cannot have a default value'));
+
+				this._optional = true;
+				return this;
+			}
+
+			/**
+			 * @param {any} d can be a Date object, number, or string
+			 * @returns {[Error[], Date | undefined]}
+			 */
+			validate(d) {
+				if (this.err.length > 0) return [this.err, undefined];
+				if (this._optional && (d === undefined || d === null)) return [[], d];
+				if (this._default !== undefined && (d === undefined || d === null)) {
+					if (this._default instanceof Date)
+						return [[], this._default];
+					else if (typeof this._default === 'number')
+						return [[], new Date(Date.now() + this._default)];
+					else return [[new Error('datetime.validate() invalid default')], undefined];
+				}
+
+				if (d instanceof Date)
+					return [[], d];
+				else if (typeof d === 'number')
+					return [[], new Date(d)];
+				else if (typeof d === 'string') {
+					const date = new Date(d);
+					if (isNaN(date.getTime()))
+						return [[new Error('datetime.validate() invalid date')], undefined];
+					return [[], date];
+				} else return [[new Error('datetime.validate() invalid date')], undefined];
+			}
+
+			/**
+			 * @returns {Error[]}
+			 */
+			errors() { return this.err; }
+		}
+	}
+
+	/**
 	 * @template T
 	 * @param {T} type The type of the array
 	 * @returns {arrayValidator}
@@ -745,6 +831,7 @@ const v = Object.freeze((() => {
 		boolean,
 		array,
 		object,
+		datetime,
 
 		equal,
 		or

@@ -287,4 +287,39 @@ const assert = console.assert;
 	assert(val41 === undefined);
 })();
 
+// datetime
+(() => {
+	const dt = v.datetime();
+
+	const [err42, val42] = dt.validate('2020-01-01T00:00:00Z');
+	assert(err42.length === 0);
+	assert(val42.getTime() === new Date('2020-01-01T00:00:00Z').getTime());
+
+	const [err43, val43] = dt.validate('2020-01-01T00:00:00');
+	assert(err43.length === 0);
+	assert(val43.getTime() === new Date('2020-01-01T00:00:00').getTime());
+
+	const [err44, val44] = dt.validate(new Date('2020-01-01T00:00:00Z'));
+	assert(err44.length === 0);
+	assert(val44.getTime() === new Date('2020-01-01T00:00:00Z').getTime());
+
+	const dt2 = v.datetime().optional();
+	const [err45, val45] = dt2.validate(undefined);
+	assert(err45.length === 0);
+	assert(val45 === undefined);
+
+	const dt3 = v.datetime().default('2020-01-01T00:00:00Z');
+	const [err46, val46] = dt3.validate(undefined);
+	assert(err46.length === 0);
+	assert(val46.getTime() === new Date('2020-01-01T00:00:00Z').getTime());
+
+	const dt4 = v.datetime().default();
+	const [err47] = dt4.validate(undefined);
+	assert(err47.length === 0);
+
+	const dt5 = v.datetime().default(100);
+	const [err48] = dt5.validate(undefined);
+	assert(err48.length === 0);
+})();
+
 console.log('If no asserts failed above, All tests passed!');
