@@ -665,7 +665,7 @@ const v = Object.freeze((() => {
 				if (types === undefined || types === null) return [[new Error('object.validate() invalid object')], undefined];
 
 				for (const key in types) {
-					if (typeof types[key].validate !== 'function')
+					if (types[key].validate && typeof types[key].validate !== 'function')
 						this.err.push(new Error(`object() key ${key} is invalid`));
 				}
 			}
@@ -687,11 +687,11 @@ const v = Object.freeze((() => {
 				if (this._optional && (d === undefined || d === null)) return [[], d];
 				if (this._default !== undefined && (d === undefined || d === null)) return [[], this._default];
 
-				if (typeof d !== 'object' || d === null)
+				if (d === null || d === undefined || typeof d !== 'object')
 					return [[new Error('object.validate() invalid object')], undefined];
 
 				for (const key in types) {
-					if (typeof types[key].validate !== 'function')
+					if (types[key].validate && typeof types[key].validate !== 'function')
 						return [[new Error(`object.validate() key ${key} is invalid`), undefined]];
 
 					const [err, val] = types[key].validate(d[key]);
