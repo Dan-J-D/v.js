@@ -322,4 +322,29 @@ const assert = console.assert;
 	assert(err48.length === 0);
 })();
 
+// instanceOf
+(() => {
+	class A { }
+	const inst = v.instanceOf(A);
+
+	const [err49, val49] = inst.validate(new A());
+	assert(err49.length === 0);
+	assert(val49 instanceof A);
+
+	const [err50, val50] = inst.validate({});
+	assert(err50.length > 0);
+	assert(val50 === undefined);
+
+	const inst2 = v.instanceOf(A).optional();
+
+	const [err51, val51] = inst2.validate(undefined);
+	assert(err51.length === 0);
+	assert(val51 === undefined);
+
+	const inst3 = v.instanceOf(A).default(new A());
+	const [err52, val52] = inst3.validate(undefined);
+	assert(err52.length === 0);
+	assert(val52 instanceof A);
+})();
+
 console.log('If no asserts failed above, All tests passed!');

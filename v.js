@@ -721,6 +721,56 @@ const v = Object.freeze((() => {
 	}
 
 	/**
+	 * @param {Function} type
+	 * @returns {instanceofValidator}
+	 */
+	const instanceOf = (type) => {
+		/**
+		 * @typedef {object} instanceofValidator
+		 * @property {() => instanceofValidator} optional
+		 * @property {(x: any) => instanceofValidator} default
+		 * @property {(d: any) => [Error[], any | undefined]} validate
+		 * @property {() => Error[]} errors
+		 */
+		return new class {
+			constructor() {
+				this.err = [];
+				if (typeof type !== 'function')
+					this.err.push(new Error('instanceof() type must be a class'));
+			}
+
+			optional() {
+				this._optional = true;
+				return this;
+			}
+
+			default(x) {
+				if (this._optional === true)
+					this.err.push(new Error('instanceof.default() cannot have a default value'));
+
+				if (!(x instanceof type))
+					this.err.push(new Error('instanceof.default() must be an instance of the class'));
+
+				this._default = x;
+				return this;
+			}
+
+			validate(d) {
+				if (this.err.length > 0) return [this.err, undefined];
+				if (this._optional && (d === undefined || d === null)) return [[], d];
+				if (this._default !== undefined && (d === undefined || d === null)) return [[], this._default];
+
+				if (!(d instanceof type))
+					return [[new Error('instanceof.validate() invalid instance')], undefined];
+
+				return [[], d];
+			}
+
+			errors() { return this.err; }
+		}
+	}
+
+	/**
 		 * @param {any} x 
 		 * @returns {equalValidator} 
 		 */
@@ -829,9 +879,10 @@ const v = Object.freeze((() => {
 		number,
 		string,
 		boolean,
+		datetime,
 		array,
 		object,
-		datetime,
+		instanceOf,
 
 		equal,
 		or
